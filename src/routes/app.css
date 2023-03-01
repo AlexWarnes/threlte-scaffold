@@ -1,0 +1,56 @@
+:root {
+	/* CSS vars */
+	--theater-bg: #282b2fcc;
+	--theater-shadow: 0 1px 1px rgb(0 0 0 / 25%), 0 2px 6px rgb(0 0 0 / 15%);
+}
+
+html,
+body,
+#sk-body {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	font-family: 'Inter', sans-serif;
+}
+
+a {
+	color: #5f9ea0;
+}
+
+.panel {
+	/* height: fit-content; */
+	padding: 0.625rem;
+	font-size: 0.75rem;
+	background-color: var(--theater-bg);
+	color: #ffffff;
+	box-shadow: var(--theater-shadow);
+	backdrop-filter: blur(14px);
+	border-radius: 2px;
+}
+
+button.primary {
+	background-color: darkcyan;
+	color: #ffffff;
+	border: 2px solid #1c1c1c;
+	cursor: pointer;
+	padding: 0.5rem 1rem;
+	border-radius: 1.25rem;
+	box-shadow: var(--theater-shadow);
+}
+button.secondary {
+	background-color: #fafbfc;
+	color: #333333;
+	border: 2px solid #1c1c1c;
+	cursor: pointer;
+	padding: 0.5rem 1rem;
+	border-radius: 1.25rem;
+	box-shadow: var(--theater-shadow);
+}
