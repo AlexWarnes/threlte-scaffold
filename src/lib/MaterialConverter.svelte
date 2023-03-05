@@ -1,44 +1,41 @@
 <script lang="ts">
-	import { T, } from '@threlte/core';
-  import { Editable } from '@threlte/theatre';
+	import { T } from '@threlte/core';
+	import { Editable } from '@threlte/theatre';
+	import { syncSceneToCode } from './globalState';
 	import type { ProtoMaterial } from './models';
 	export let material: ProtoMaterial;
-  export let materialEditorLabel: string;
-
-  function handleChange(evt: any){
-    console.log('Material Change:', evt)
-  }
+	export let materialEditorLabel: string;
 </script>
 
-
 {#if material.type === 'Basic'}
-<T.MeshBasicMaterial {...material.props}>
-  <Editable
-    name={materialEditorLabel}
-    transparent
-    opacity
-    wireframe
-    toneMapped
-    userData
-    on:change={handleChange}
-  />
-</T.MeshBasicMaterial>
+	<T.MeshBasicMaterial {...material.props}>
+		<Editable
+			name={materialEditorLabel}
+			color
+			transparent
+			opacity
+			wireframe
+			toneMapped
+			userData
+			on:change={syncSceneToCode}
+		/>
+	</T.MeshBasicMaterial>
 {:else if material.type === 'Standard'}
-<T.MeshStandardMaterial {...material.props}>
-  <Editable
-    name={materialEditorLabel}
-    color
-    metalness
-    roughness
-    emissive
-    emissiveIntensity
-    transparent
-    opacity
-    wireframe
-    flatShading
-    toneMapped
-    userData
-    on:change={handleChange}
-  />
-</T.MeshStandardMaterial>
+	<T.MeshStandardMaterial {...material.props}>
+		<Editable
+			name={materialEditorLabel}
+			color
+			metalness
+			roughness
+			emissive
+			emissiveIntensity
+			transparent
+			opacity
+			wireframe
+			flatShading
+			toneMapped
+			userData
+			on:change={syncSceneToCode}
+		/>
+	</T.MeshStandardMaterial>
 {/if}

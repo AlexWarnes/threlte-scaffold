@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { 
-    // InteractiveObject, 
-    T, 
-    // type ThreltePointerEvent 
-  } from '@threlte/core';
+	import {
+		// InteractiveObject,
+		T
+		// type ThreltePointerEvent
+	} from '@threlte/core';
 	import { Editable } from '@threlte/theatre';
 	import GeometryConverter from './GeometryConverter.svelte';
+	import { syncSceneToCode } from './globalState';
 	import MaterialConverter from './MaterialConverter.svelte';
 
 	export let mesh: any;
@@ -19,7 +20,7 @@
 </script>
 
 <T.Mesh>
-	<Editable name={meshEditorLabel} transform controls />
+	<Editable name={meshEditorLabel} transform controls on:change={syncSceneToCode} />
 
 	<GeometryConverter geometry={mesh.geometry} />
 	<MaterialConverter material={mesh.material} {materialEditorLabel} />

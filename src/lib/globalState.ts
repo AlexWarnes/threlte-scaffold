@@ -1,8 +1,16 @@
 import { derived, writable } from 'svelte/store';
-import type { Scene } from 'three';
-import { generateUUID } from 'three/src/math/MathUtils';
-import type { ProtoGeometry, ProtoGeometryType, ProtoMaterial } from './models';
+import type {
+	ProtoGeometry,
+	ProtoGeometryType,
+	ProtoLight,
+	ProtoLightType,
+	ProtoMaterial,
+	ProtoSettings
+} from './models';
 
+const defaultSettings: ProtoSettings = {
+	showGrid: true
+};
 const defaultGeometries: ProtoGeometry[] = [
 	{
 		id: '001',
@@ -12,6 +20,17 @@ const defaultGeometries: ProtoGeometry[] = [
 			userData: {}
 		},
 		materialID: '002'
+	}
+];
+const defaultLights: ProtoLight[] = [
+	{
+		id: '001',
+		type: 'Directional',
+		props: {
+			args: [],
+			position: [5, 5, 5],
+			userData: {}
+		}
 	}
 ];
 
@@ -53,10 +72,19 @@ export const editablePropsByMaterial: { [key: string]: string[] } = {
 		'userData'
 	]
 };
+export const editablePropsByLight: { [key: string]: string[] } = {
+	AmbientLight: ['color', 'intensity', 'userData'],
+	DirectionalLight: ['color', 'intensity', 'userData', 'position'],
+	PointLight: ['color', 'intensity', 'distance', 'decay', 'userData', 'position'],
+	HemisphereLight: ['color', 'groundColor', 'intensity', 'position', 'userData']
+};
 
 let geoCount = defaultGeometries.length;
 let matCount = defaultMaterials.length;
+let lightCount = defaultLights.length;
 
+export const settings = writable(defaultSettings);
+export const lights = writable(defaultLights);
 export const geometries = writable<ProtoGeometry[]>(defaultGeometries);
 export const materials = writable(defaultMaterials);
 export const meshes = derived([geometries, materials], ([geoList, matLib]) => {
@@ -64,12 +92,13 @@ export const meshes = derived([geometries, materials], ([geoList, matLib]) => {
 		return {
 			id: 'mesh-' + geo.id,
 			geometry: geo,
+			userData: {},
 			material: matLib[geo.materialID] || '001'
 		};
 	});
 });
 export const selected = writable(null);
-export const updateScene = writable<number>(0);
+export const updateScene = writable<number>(1);
 
 export function addMesh(geometryType: ProtoGeometryType, materialID: string) {
 	geoCount += 1;
@@ -83,4 +112,30 @@ export function addMesh(geometryType: ProtoGeometryType, materialID: string) {
 		materialID
 	};
 	geometries.update((current) => [newGeo, ...current]);
+}
+
+export function addLight(lightType: ProtoLightType) {
+	lightCount += 1;
+	const newLight: ProtoLight = {
+		id: lightCount.toString().padStart(3, '0'),
+		type: lightType,
+		props: {
+			args: [],
+			position: [5, 5, 5],
+			userData: {}
+		}
+	};
+	lights.update((current) => [newLight, ...current]);
+}
+
+export function syncSceneToCode() {
+	updateScene.update((n) => n + 1);
+}
+
+export function deleteLight(id: string) {
+	lights.update((current) => current.filter((l) => l.id !== id));
+}
+
+export function deleteMesh(id: string) {
+	geometries.update((current) => current.filter((geo) => geo.id !== id));
 }
