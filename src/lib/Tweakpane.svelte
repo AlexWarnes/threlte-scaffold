@@ -6,7 +6,6 @@
 		selectionDetails,
 		selectionRef,
 		syncSceneToCode,
-		updateScene
 	} from './globalState';
 	import { Pane } from 'tweakpane';
 	import { onDestroy, onMount, createEventDispatcher } from 'svelte';
@@ -17,7 +16,7 @@
 	export let propKeys: any[] = [];
 	export let matKeys: any[] = [];
 	export let title: string = '';
-
+  let preventSync = false;
 	const dispatch = createEventDispatcher();
 
 	function handleDelete() {
@@ -94,12 +93,15 @@
 	}
 
 	function handleChange() {
+    if (preventSync) return;
 		ctx.invalidate();
 		syncSceneToCode();
 	}
 
 	$: if (objectData && pane) {
+    preventSync = true;
 		pane.refresh();
+    setTimeout(() => preventSync = false)
 	}
 
 	onDestroy(() => {
