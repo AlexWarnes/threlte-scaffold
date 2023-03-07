@@ -1,4 +1,6 @@
 import { derived, get, writable, type Readable } from 'svelte/store';
+import { rxWritable } from 'svelte-fuse-rx';
+import { throttleTime } from 'rxjs';
 import type {
 	ProtoGeometry,
 	ProtoGeometryType,
@@ -107,7 +109,11 @@ export const selection = writable<string | null>(null);
 export const selectionRef = writable<any | null>(null);
 export const transformMode = writable<TransformMode>('translate');
 export const transformSnap = writable<number | null>(null);
-export const updateScene = writable<number>(1);
+export const updateSceneTrigger = rxWritable(1);
+export const updateScene = updateSceneTrigger.pipe(
+	throttleTime(350)
+)
+
 export const selectionDetails = derived(
 	[selection, meshes, lights],
 	([$selection, $meshes, $lights]) => {
@@ -146,7 +152,7 @@ export function addLight(lightType: ProtoLightType) {
 }
 
 export function syncSceneToCode() {
-	updateScene.update((n) => n + 1);
+	updateSceneTrigger.update((n: number) => n + 1);
 }
 
 export function deleteLight(id: string) {

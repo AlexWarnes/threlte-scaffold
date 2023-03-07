@@ -44,12 +44,23 @@
 	}
 
   li {
-    border: 1px solid transparent;
     margin: 0.125rem 0;
-    
+    padding: 0.375rem 0.75rem;
+    background-color: var(--theater-bg);
+    filter: unset;
+    color: #b1b1b1;
+		border: 1px solid transparent;
+    cursor: pointer;
   }
 
   li.selected {
-    border-color: darkcyan;
+		background-color: #10101042;
+		border-color: darkcyan;
   }
+
+	li:not(.selected):hover {
+		background-color: #10101042;
+		border-color: #ffffff59;
+	}
+
 </style>
