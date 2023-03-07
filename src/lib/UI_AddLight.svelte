@@ -34,6 +34,14 @@
 		align-items: flex-start;
 		gap: 0.125rem;
 	}
+
+	.add-light-row {
+		display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+	}
+	
 	button {
 		cursor: pointer;
 		transition: background-color 0.2s ease;

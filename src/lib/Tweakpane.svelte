@@ -1,14 +1,10 @@
 <script lang="ts">
 	import type { ThrelteContext } from '@threlte/core';
-	import { slide } from 'svelte/transition';
 	import {
-		selection,
-		selectionDetails,
-		selectionRef,
 		syncSceneToCode,
 	} from './globalState';
 	import { Pane } from 'tweakpane';
-	import { onDestroy, onMount, createEventDispatcher } from 'svelte';
+	import { onDestroy, onMount, } from 'svelte';
 
 	import { ColorGUIHelper } from './Helpers';
 	export let ctx: ThrelteContext;
@@ -16,16 +12,8 @@
 	export let propKeys: any[] = [];
 	export let matKeys: any[] = [];
 	export let title: string = '';
+
   let preventSync = false;
-	const dispatch = createEventDispatcher();
-
-	function handleDelete() {
-		dispatch('delete');
-	}
-	function handleDuplicate() {
-		dispatch('duplicate');
-	}
-
 	let containerRef: HTMLElement;
 	let pane: Pane;
 
@@ -80,15 +68,7 @@
 			});
 		}
 
-		const actions = pane.addFolder({
-			title: 'Actions',
-			expanded: true
-		});
-		actions.addSeparator();
-		actions.addButton({ title: 'DUPLICATE' }).on('click', handleDuplicate);
-		actions.addSeparator();
-		actions.addButton({ title: 'DELETE' }).on('click', handleDelete);
-
+		pane.addSeparator();
 		pane.on('change', handleChange);
 	}
 

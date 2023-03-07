@@ -55,8 +55,9 @@
 	.add-mesh-row {
 		width: 100%;
 		display: flex;
-		justify-content: space-between;
-		align-items: center;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
 	}
 	button {
     cursor: pointer;

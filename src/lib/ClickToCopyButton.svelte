@@ -45,7 +45,7 @@
 	}
 	/* .copy-btn.success {
 		border: 2px solid #fafbfc;
-		background-color: darkcyan;
+		background-color: var(--primary);
 		color: #fafbfc;
 	} */
 </style>

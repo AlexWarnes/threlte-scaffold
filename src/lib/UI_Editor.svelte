@@ -35,12 +35,18 @@
 	}
 	function handleDuplicate() {
 		if (!details) return;
+
+    // TODO: handle object duplication
 		if (isMesh(details.type)) {
 			duplicateMesh($selectionDetails as ProtoMesh, $selectionRef);
 		} else if (isLight(details.type)) {
 			// deleteLight($selection as string);
 		}
 	}
+	function handleFocus() {
+		if (!details) return;
+    // TODO: set target to selectionRef
+  }
 
 	$: if ($updateScene) {
 		details = ctx?.scene.children.find((obj) => obj.uuid === $selectionRef?.uuid);
@@ -60,16 +66,14 @@
 {#if $selection && $selectionRef && details}
 	<div id="editor-panel" class="container panel">
 		{#key $selection}
-			<Tweakpane
-				{ctx}
-				objectData={details}
-				{propKeys}
-				{matKeys}
-				title={$selection}
-				on:duplicate={handleDuplicate}
-				on:delete={handleDelete}
-			/>
+			<Tweakpane {ctx} objectData={details} {propKeys} {matKeys} title={$selection} />
 		{/key}
+		<div class="button-box">
+			<button on:click={handleFocus} class="secondary">FOCUS</button>
+			<button on:click={handleDuplicate} class="secondary">DUPLICATE</button>
+			<span class="spacer" />
+			<button on:click={handleDelete} class="delete secondary">DELETE</button>
+		</div>
 	</div>
 {/if}
 
@@ -78,8 +82,23 @@
 		width: 33vw;
 		max-width: 500px;
 		max-height: 50vh;
-		/* display: flex;
-		flex-direction: column;
-		padding: 0; */
+		padding: 0;
+		border-radius: 6px;
 	}
+
+	.button-box {
+		padding: 0.5rem;
+		display: flex;
+		justify-content: flex-start;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.spacer {
+		flex-grow: 1;
+	}
+
+  button.delete {
+    background-color: #cd5c5c;
+  }
 </style>

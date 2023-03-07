@@ -47,8 +47,8 @@
 	<Grid
 		infiniteGrid
 		fadeDistance={50}
-		cellColor="#fafbfc"
-		sectionColor="darkcyan"
+		cellColor="#bbbcc4"
+		sectionColor="#006a6a"
 		userData={{ isThrelteGrid: true }}
 	/>
 {/if}

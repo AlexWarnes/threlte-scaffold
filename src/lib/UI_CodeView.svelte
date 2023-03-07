@@ -99,10 +99,13 @@
 			<pre id="scaffold-code">
 {`<Canvas>`}
 
+	{`<!-- LIGHTS -->`}
+
   {#each lights as light (light.id)}
 					{`<T.${light.type} ${lightPropsToString(light, '\n\t\t')} \n\t/>\n\t`}
 				{/each}
-
+	
+	{`<!-- MESHES -->`}
 	{#each meshes as obj (obj.id)}
 					{`
 	<T.${obj.constructor.name}
@@ -134,21 +137,23 @@
 		padding: 0;
 	}
 	.header {
-		padding: 1.125rem;
+		padding: 0.875rem;
 		cursor: pointer;
+		background-color: var(--tweak-bg-light);
 		/* border: 1px solid transparent; */
 		transition: background 0.2s ease;
 	}
 	.header:hover {
 		/* LIGHTER EFFECT */
-		background-color: #3b3f45cc;
+		background-color: var(--tweak-bg-light-hover);
 
 		/* DARKER EFFECT */
-		/* background-color: #10101042; */
+		/* background-color: var(--active-dark); */
 		/* border-color: #00000059; */
 	}
 	.header h2 {
 		margin: 0;
+		font-size: 0.75rem;
 	}
 
 	.content-box {
@@ -160,8 +165,8 @@
 		flex-direction: column;
 	}
 	pre {
-		font-size: 16px;
-		font-family: monospace;
+		font-size: 0.75rem;
+		font-family: 'Roboto Mono', monospace;
 		background-color: #000000b3;
 		border-radius: 3px;
 		box-shadow: var(--theater-shadow);
