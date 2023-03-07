@@ -1,29 +1,33 @@
 <script lang="ts">
-	import {
-		// InteractiveObject,
-		T
-		// type ThreltePointerEvent
-	} from '@threlte/core';
-	import { Editable } from '@threlte/theatre';
+	import { InteractiveObject, T, TransformControls, type ThreltePointerEvent } from '@threlte/core';
 	import GeometryConverter from './GeometryConverter.svelte';
-	import { syncSceneToCode } from './globalState';
+	import { selection, setSelection, syncSceneToCode, selectionRef, setSelectionRef } from './globalState';
 	import MaterialConverter from './MaterialConverter.svelte';
-
 	export let mesh: any;
+	let ref: any;
 
-	// function handleClick(evt: CustomEvent<ThreltePointerEvent>) {
-	// 	selected.update(currentID => currentID === mesh.meshID ? null : mesh.meshID)
-	// }
+	let preventClickHandler = false;
+	function handleClick(evt: CustomEvent<ThreltePointerEvent>) {
+		if (preventClickHandler) return;
+		setSelection(mesh.id);
+	}
 
-	const meshEditorLabel = `Mesh_${mesh.geometry.type}_${mesh.geometry.id} / mesh`;
-	const materialEditorLabel = `Mesh_${mesh.geometry.type}_${mesh.geometry.id} / material`;
+	$: if ($selection === mesh.id){
+		setSelectionRef(ref);
+	}
 </script>
 
-<T.Mesh>
-	<Editable name={meshEditorLabel} transform controls on:change={syncSceneToCode} />
+<T.Mesh let:ref={meshRef} bind:ref>
 
 	<GeometryConverter geometry={mesh.geometry} />
-	<MaterialConverter material={mesh.material} {materialEditorLabel} />
+	<MaterialConverter material={mesh.material} />
 
-	<!-- <InteractiveObject interactive object={meshRef} on:click={handleClick} /> -->
+	<InteractiveObject interactive object={meshRef} on:click={handleClick} />
+	{#if $selection === mesh.id}
+		<TransformControls
+			on:change={syncSceneToCode}
+			on:mouseDown={() => (preventClickHandler = true)}
+			on:mouseUp={() => setTimeout(() => (preventClickHandler = false))}
+		/>
+	{/if}
 </T.Mesh>

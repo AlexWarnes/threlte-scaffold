@@ -1,10 +1,11 @@
-import { derived, writable } from 'svelte/store';
+import { derived, get, writable, type Readable } from 'svelte/store';
 import type {
 	ProtoGeometry,
 	ProtoGeometryType,
 	ProtoLight,
 	ProtoLightType,
 	ProtoMaterial,
+	ProtoMesh,
 	ProtoSettings
 } from './models';
 
@@ -68,15 +69,15 @@ export const editablePropsByMaterial: { [key: string]: string[] } = {
 		'opacity',
 		'wireframe',
 		'flatShading',
-		'toneMapped',
-		'userData'
+		'toneMapped'
+		// 'userData'
 	]
 };
 export const editablePropsByLight: { [key: string]: string[] } = {
-	AmbientLight: ['color', 'intensity', 'userData'],
-	DirectionalLight: ['color', 'intensity', 'userData', 'position'],
-	PointLight: ['color', 'intensity', 'distance', 'decay', 'userData', 'position'],
-	HemisphereLight: ['color', 'groundColor', 'intensity', 'position', 'userData']
+	AmbientLight: ['color', 'intensity'],
+	DirectionalLight: ['color', 'intensity', 'position'],
+	PointLight: ['color', 'intensity', 'distance', 'decay', 'position'],
+	HemisphereLight: ['color', 'groundColor', 'intensity', 'position']
 };
 
 let geoCount = defaultGeometries.length;
@@ -87,7 +88,7 @@ export const settings = writable(defaultSettings);
 export const lights = writable(defaultLights);
 export const geometries = writable<ProtoGeometry[]>(defaultGeometries);
 export const materials = writable(defaultMaterials);
-export const meshes = derived([geometries, materials], ([geoList, matLib]) => {
+export const meshes: Readable<ProtoMesh[]> = derived([geometries, materials], ([geoList, matLib]) => {
 	return geoList.map((geo) => {
 		return {
 			id: 'mesh-' + geo.id,
@@ -97,9 +98,17 @@ export const meshes = derived([geometries, materials], ([geoList, matLib]) => {
 		};
 	});
 });
-export const selected = writable(null);
+export const selection = writable<string | null>(null);
+export const selectionRef = writable<any | null>(null);
 export const updateScene = writable<number>(1);
+export const selectionDetails = derived(
+	[selection, meshes, lights],
+	([$selection, $meshes, $lights]) => {
+		if (!selection) return null;
 
+		return [...$meshes, ...$lights].find((obj) => obj.id === $selection);
+	}
+);
 export function addMesh(geometryType: ProtoGeometryType, materialID: string) {
 	geoCount += 1;
 	const newGeo: ProtoGeometry = {
@@ -133,9 +142,28 @@ export function syncSceneToCode() {
 }
 
 export function deleteLight(id: string) {
+	if (get(selection) === id) {
+		clearSelection();
+	}
 	lights.update((current) => current.filter((l) => l.id !== id));
 }
 
 export function deleteMesh(id: string) {
+	if (get(selection) === id) {
+		clearSelection();
+	}
 	geometries.update((current) => current.filter((geo) => geo.id !== id));
+}
+
+export function setSelection(id: string | null): void {
+	selection.update((currentSelection) => (currentSelection === id ? null : id));
+}
+
+export function setSelectionRef(ref: any) {
+	selectionRef.update((currentRef) => (currentRef?.uuid === ref?.uuid ? null : ref));
+}
+
+function clearSelection() {
+	selection.set(null);
+	selectionRef.set(null);
 }
