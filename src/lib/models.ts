@@ -6,11 +6,18 @@ export type ProtoGeometryType =
 	| 'Icosahedron'
 	| 'Dodecahedron'
 	| 'Octahedron';
-export type ProtoLightType = 'Ambient' | 'Directional' | 'Point' | 'Hemisphere'
+export type ProtoLightType = 'Ambient' | 'Directional' | 'Point' | 'Hemisphere';
 export type ProtoMaterialType = 'Basic' | 'Standard';
 
 export interface ProtoSettings {
 	showGrid: boolean;
+}
+
+export interface ProtoMesh {
+	id: string;
+	geometry: ProtoGeometry;
+	userData: any;
+	material: ProtoMaterial;
 }
 
 export interface ProtoGeometry {

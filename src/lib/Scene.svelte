@@ -7,6 +7,7 @@
 	import MeshConverter from './MeshConverter.svelte';
 	import LightConverter from './LightConverter.svelte';
 	import { Editable } from '@threlte/theatre';
+	
 </script>
 
 <T.PerspectiveCamera makeDefault position={[0, 5, 15]}>
@@ -18,10 +19,10 @@
 	<T.IcosahedronGeometry />
 	<T.MeshStandardMaterial color="red" />
 </T.Mesh> -->
-<T.Mesh>
+<T.Mesh userData={{ name: "background" }}>
 	<T.SphereGeometry args={[500]} />
 	<T.MeshBasicMaterial color="black" side={1} let:ref>
-		<Editable name="Background" color />
+		<!-- <Editable name="Background" color /> -->
 	</T.MeshBasicMaterial>
 </T.Mesh>
 {#each $meshes as mesh, idx (mesh.id)}

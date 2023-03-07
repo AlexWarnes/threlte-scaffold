@@ -7,5 +7,5 @@
 		Grid
 		<input type="checkbox" bind:checked={$settings.showGrid} />
 	</label>
-  <button on:click={() => localStorage.clear()}>CLEAR</button>
+  <!-- <button on:click={() => localStorage.clear()}>CLEAR</button> -->
 </div>

@@ -5,31 +5,37 @@
 	import Scene from '$lib/Scene.svelte';
 	import UI_CodeView from '$lib/UI_CodeView.svelte';
 	import UI_Settings from '$lib/UI_Settings.svelte';
+	import UI_SceneGraph from '$lib/UI_SceneGraph.svelte';
+	import UI_Editor from '$lib/UI_Editor.svelte';
 	import ActionsBar from '$lib/ActionsBar.svelte';
-	import { syncSceneToCode } from '$lib/globalState';
+	import { selectionRef, selection, syncSceneToCode, setSelectionRef } from '$lib/globalState';
 
 	let ctx: ThrelteContext;
+
+	$: if ($selection === null) {
+		setSelectionRef(null);
+	}
 </script>
 
 <div class="canvas-wrapper">
-	<Studio enabled={dev} />
-
 	<Canvas>
-		<Project name="Threlte Scaffold">
-			<Sheet name="Scene">
-				<Scene />
-				<ContextBridge bind:ctx />
-			</Sheet>
-		</Project>
+		<Scene />
+		<ContextBridge bind:ctx />
 	</Canvas>
+	<div class="scene-graph-box">
+		<UI_SceneGraph />
+	</div>
 	<div class="actions-box" on:click={syncSceneToCode}>
-    <ActionsBar />
+		<ActionsBar />
 	</div>
 	<div class="code-view-box">
 		<UI_CodeView {ctx} />
 	</div>
 	<div class="settings-box">
 		<UI_Settings />
+	</div>
+	<div class="editor-box">
+		<UI_Editor {ctx} />
 	</div>
 </div>
 
@@ -59,5 +65,15 @@
 		top: 1rem;
 		left: 50%;
 		transform: translateX(-50%);
+	}
+	.scene-graph-box {
+		position: absolute;
+		top: 1rem;
+		left: 1rem;
+	}
+	.editor-box {
+		position: absolute;
+		top: 1rem;
+		right: 1rem;
 	}
 </style>

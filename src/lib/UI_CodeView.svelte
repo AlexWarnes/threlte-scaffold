@@ -17,7 +17,7 @@
 		};
 		if (ctx?.scene) {
 			for (let obj of ctx?.scene.children) {
-				if ((obj as Mesh).isMesh && !obj.userData.isThrelteGrid) {
+				if ((obj as Mesh).isMesh && !obj.userData.isThrelteGrid && obj.userData.name !== "background") {
 					temp.meshes.push(obj);
 				} else if ((obj as Light).isLight) {
 					temp.lights.push(obj);
