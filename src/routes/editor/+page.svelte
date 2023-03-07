@@ -9,7 +9,8 @@
 	import UI_Editor from '$lib/UI_Editor.svelte';
 	import ActionsBar from '$lib/ActionsBar.svelte';
 	import { selectionRef, selection, syncSceneToCode, setSelectionRef } from '$lib/globalState';
-
+	import { KeyboardControls } from 'svelte-kbc';
+	import { keyConfig } from '$lib/shortcuts';
 	let ctx: ThrelteContext;
 
 	$: if ($selection === null) {
@@ -17,27 +18,29 @@
 	}
 </script>
 
-<div class="canvas-wrapper">
-	<Canvas>
-		<Scene />
-		<ContextBridge bind:ctx />
-	</Canvas>
-	<div class="scene-graph-box">
-		<UI_SceneGraph />
+<KeyboardControls config={keyConfig}>
+	<div class="canvas-wrapper">
+		<Canvas>
+			<Scene />
+			<ContextBridge bind:ctx />
+		</Canvas>
+		<div class="scene-graph-box">
+			<UI_SceneGraph />
+		</div>
+		<div class="actions-box" on:click={syncSceneToCode}>
+			<ActionsBar />
+		</div>
+		<div class="code-view-box">
+			<UI_CodeView {ctx} />
+		</div>
+		<div class="settings-box">
+			<UI_Settings />
+		</div>
+		<div class="editor-box">
+			<UI_Editor {ctx} />
+		</div>
 	</div>
-	<div class="actions-box" on:click={syncSceneToCode}>
-		<ActionsBar />
-	</div>
-	<div class="code-view-box">
-		<UI_CodeView {ctx} />
-	</div>
-	<div class="settings-box">
-		<UI_Settings />
-	</div>
-	<div class="editor-box">
-		<UI_Editor {ctx} />
-	</div>
-</div>
+</KeyboardControls>
 
 <style>
 	.canvas-wrapper {

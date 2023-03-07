@@ -8,7 +8,7 @@ export type ProtoGeometryType =
 	| 'Octahedron';
 export type ProtoLightType = 'Ambient' | 'Directional' | 'Point' | 'Hemisphere';
 export type ProtoMaterialType = 'Basic' | 'Standard';
-
+export type TransformMode = 'translate' | 'rotate' | 'scale';
 export interface ProtoSettings {
 	showGrid: boolean;
 }
@@ -26,6 +26,9 @@ export interface ProtoGeometry {
 	props: {
 		args: any[];
 		userData: any;
+	};
+	meshProps: {
+		[key: string]: any;
 	};
 	materialID: string;
 }

@@ -11,23 +11,22 @@
 	import { Pane } from 'tweakpane';
 	import { onDestroy, onMount, createEventDispatcher } from 'svelte';
 
-  
 	import { ColorGUIHelper } from './Helpers';
 	export let ctx: ThrelteContext;
 	export let objectData: any;
 	export let propKeys: any[] = [];
 	export let matKeys: any[] = [];
 	export let title: string = '';
-  
-  const dispatch = createEventDispatcher();
 
-  function handleDelete(){
-    dispatch('delete')
-  }
-  function handleDuplicate(){
-    dispatch('duplicate')
-  }
-  
+	const dispatch = createEventDispatcher();
+
+	function handleDelete() {
+		dispatch('delete');
+	}
+	function handleDuplicate() {
+		dispatch('duplicate');
+	}
+
 	let containerRef: HTMLElement;
 	let pane: Pane;
 
@@ -52,7 +51,12 @@
 			if (objectData[key]?.isColor) {
 				pane.addInput(new ColorGUIHelper(objectData, key), 'value', { label: key });
 			} else {
-				pane.addInput(objectData, key);
+				pane.addInput(objectData, key, {
+					step: 0.1,
+					x: { step: 0.1 },
+					y: { step: 0.1 },
+					z: { step: 0.1 }
+				});
 			}
 		});
 
@@ -69,23 +73,22 @@
 					mat.addInput(new ColorGUIHelper(objectData.material, key), 'value', { label: key });
 				} else if (matWillNeedUpdate[key]) {
 					mat
-						.addInput(objectData.material, key)
+						.addInput(objectData.material, key, { step: 0.1 })
 						.on('change', () => (objectData.material.needsUpdate = true));
 				} else {
-					mat.addInput(objectData.material, key);
+					mat.addInput(objectData.material, key, { step: 0.1 });
 				}
 			});
 		}
 
-
-    const actions = pane.addFolder({
-      title: 'Actions',
-      expanded: true,
-    })
-    actions.addSeparator();
-    actions.addButton({title: "DUPLICATE"}).on('click', handleDuplicate)
-    actions.addSeparator();
-    actions.addButton({title: "DELETE", }).on('click', handleDelete)
+		const actions = pane.addFolder({
+			title: 'Actions',
+			expanded: true
+		});
+		actions.addSeparator();
+		actions.addButton({ title: 'DUPLICATE' }).on('click', handleDuplicate);
+		actions.addSeparator();
+		actions.addButton({ title: 'DELETE' }).on('click', handleDelete);
 
 		pane.on('change', handleChange);
 	}

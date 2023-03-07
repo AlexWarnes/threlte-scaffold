@@ -10,7 +10,8 @@
 		selectionDetails,
 		selectionRef,
 		syncSceneToCode,
-		updateScene
+		updateScene,
+		duplicateMesh
 	} from './globalState';
 	import { onMount } from 'svelte';
 	import Tweakpane from './Tweakpane.svelte';
@@ -32,6 +33,15 @@
 			deleteLight($selection as string);
 		}
 	}
+	function handleDuplicate() {
+		if (!details) return;
+		if (isMesh(details.type)) {
+			duplicateMesh($selectionDetails as ProtoMesh, $selectionRef);
+		} else if (isLight(details.type)) {
+			// deleteLight($selection as string);
+		}
+	}
+
 	$: if ($updateScene) {
 		details = ctx?.scene.children.find((obj) => obj.uuid === $selectionRef?.uuid);
 	}
@@ -56,6 +66,7 @@
 				{propKeys}
 				{matKeys}
 				title={$selection}
+				on:duplicate={handleDuplicate}
 				on:delete={handleDelete}
 			/>
 		{/key}

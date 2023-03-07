@@ -6,7 +6,8 @@ import type {
 	ProtoLightType,
 	ProtoMaterial,
 	ProtoMesh,
-	ProtoSettings
+	ProtoSettings,
+	TransformMode
 } from './models';
 
 const defaultSettings: ProtoSettings = {
@@ -20,6 +21,7 @@ const defaultGeometries: ProtoGeometry[] = [
 			args: [],
 			userData: {}
 		},
+		meshProps: {},
 		materialID: '002'
 	}
 ];
@@ -88,18 +90,23 @@ export const settings = writable(defaultSettings);
 export const lights = writable(defaultLights);
 export const geometries = writable<ProtoGeometry[]>(defaultGeometries);
 export const materials = writable(defaultMaterials);
-export const meshes: Readable<ProtoMesh[]> = derived([geometries, materials], ([geoList, matLib]) => {
-	return geoList.map((geo) => {
-		return {
-			id: 'mesh-' + geo.id,
-			geometry: geo,
-			userData: {},
-			material: matLib[geo.materialID] || '001'
-		};
-	});
-});
+export const meshes: Readable<ProtoMesh[]> = derived(
+	[geometries, materials],
+	([geoList, matLib]) => {
+		return geoList.map((geo) => {
+			return {
+				id: 'mesh-' + geo.id,
+				geometry: geo,
+				userData: {},
+				material: matLib[geo.materialID] || '001'
+			};
+		});
+	}
+);
 export const selection = writable<string | null>(null);
 export const selectionRef = writable<any | null>(null);
+export const transformMode = writable<TransformMode>('translate');
+export const transformSnap = writable<number | null>(null);
 export const updateScene = writable<number>(1);
 export const selectionDetails = derived(
 	[selection, meshes, lights],
@@ -118,6 +125,7 @@ export function addMesh(geometryType: ProtoGeometryType, materialID: string) {
 			args: [],
 			userData: {}
 		},
+		meshProps: {},
 		materialID
 	};
 	geometries.update((current) => [newGeo, ...current]);
@@ -166,4 +174,27 @@ export function setSelectionRef(ref: any) {
 function clearSelection() {
 	selection.set(null);
 	selectionRef.set(null);
+}
+
+export function duplicateMesh(protoMesh: ProtoMesh, meshRef: any) {
+	// add material to library
+	// duplicate geo with attributes
+	//
+	geoCount += 1;
+	const newGeo: ProtoGeometry = {
+		id: geoCount.toString().padStart(3, '0'),
+		type: protoMesh.geometry.type,
+		props: {
+			args: [],
+			userData: {}
+		},
+		meshProps: {
+			// position: meshRef.position.clone().setX(meshRef.position.x + 1),
+			// rotation: meshRef.rotation.clone(),
+			// scale: meshRef.scale.clone()
+		},
+		materialID: protoMesh.geometry.materialID
+	};
+	console.log("dupe:", newGeo)
+	geometries.update((current) => [newGeo, ...current]);
 }
