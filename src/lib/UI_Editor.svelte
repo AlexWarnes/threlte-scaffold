@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { ThrelteContext } from '@threlte/core';
+	import CarbonTrashCan from '~icons/carbon/trash-can'
 	import { slide } from 'svelte/transition';
 	import {
 		deleteLight,
@@ -71,8 +72,10 @@
 		<div class="button-box">
 			<button on:click={handleFocus} class="secondary">FOCUS</button>
 			<button on:click={handleDuplicate} class="secondary">DUPLICATE</button>
-			<span class="spacer" />
-			<button on:click={handleDelete} class="delete secondary">DELETE</button>
+			<span class="flex-spacer" />
+			<button on:click={handleDelete} class="delete secondary">
+				<CarbonTrashCan />
+				DELETE</button>
 		</div>
 	</div>
 {/if}
@@ -92,10 +95,6 @@
 		justify-content: flex-start;
 		align-items: center;
 		gap: 1rem;
-	}
-
-	.spacer {
-		flex-grow: 1;
 	}
 
   button.delete {

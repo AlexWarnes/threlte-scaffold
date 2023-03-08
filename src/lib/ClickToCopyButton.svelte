@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import CarbonCopy from '~icons/carbon/copy';
 	export let elementID: string;
 	let copyStatus: 'IDLE' | 'SUCCESS' = 'IDLE';
 	let copyTemplateStatus: 'IDLE' | 'SUCCESS' = 'IDLE';
@@ -30,22 +31,14 @@
 	class="copy-btn"
 >
 	<span>{copyStatus === 'SUCCESS' ? 'Copied!' : 'Copy'}</span>
+	<CarbonCopy />
 </button>
 
 <style>
 	.copy-btn {
-		/* border: 2px solid transparent; */
-		/* margin: 0 0 1rem 0; */
-		/* padding: 0.5rem 0.75rem; */
-		width: 9rem;
+		width: 6rem;
 		display: flex;
-		justify-content: flex-start;
+		justify-content: space-between;
 		align-items: center;
-		/* cursor: pointer; */
 	}
-	/* .copy-btn.success {
-		border: 2px solid #fafbfc;
-		background-color: var(--primary);
-		color: #fafbfc;
-	} */
 </style>

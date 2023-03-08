@@ -13,7 +13,8 @@ import type {
 } from './models';
 
 const defaultSettings: ProtoSettings = {
-	showGrid: true
+	showGrid: true,
+	bgColor: "#000000",
 };
 const defaultGeometries: ProtoGeometry[] = [
 	{

@@ -31,7 +31,7 @@
 </T.Mesh> -->
 <T.Mesh userData={{ name: 'background' }}>
 	<T.SphereGeometry args={[500]} />
-	<T.MeshBasicMaterial color="black" side={1} let:ref>
+	<T.MeshBasicMaterial color={$settings.bgColor} side={1} let:ref>
 		<!-- <Editable name="Background" color /> -->
 	</T.MeshBasicMaterial>
 </T.Mesh>

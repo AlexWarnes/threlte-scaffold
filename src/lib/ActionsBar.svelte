@@ -1,4 +1,7 @@
 <script lang="ts">
+	import CarbonLightFilled from '~icons/carbon/light-filled';
+	import Carbon3dPrintMesh from '~icons/carbon/3d-print-mesh';
+	import CarbonImage from '~icons/carbon/image';
 	import UI_AddMesh from '$lib/UI_AddMesh.svelte';
 	import UI_AddLight from '$lib/UI_AddLight.svelte';
 	import { slide } from 'svelte/transition';
@@ -13,17 +16,26 @@
 	<button
 		class="tertiary"
 		class:active={showActionsFor === 'MESH'}
-		on:click={() => handleActionClick('MESH')}>MESH</button
+		on:click={() => handleActionClick('MESH')}
+	>
+		<Carbon3dPrintMesh />
+		MESH</button
 	>
 	<button
 		class="tertiary"
 		class:active={showActionsFor === 'LIGHT'}
-		on:click={() => handleActionClick('LIGHT')}>LIGHT</button
+		on:click={() => handleActionClick('LIGHT')}
+	>
+		<CarbonLightFilled />
+		LIGHT</button
 	>
 	<button
 		class="tertiary"
 		class:active={showActionsFor === 'SCENE'}
-		on:click={() => handleActionClick('SCENE')}>SCENE</button
+		on:click={() => handleActionClick('SCENE')}
+	>
+		<CarbonImage />
+		SCENE</button
 	>
 </div>
 

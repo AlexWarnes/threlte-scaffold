@@ -11,6 +11,7 @@ export type ProtoMaterialType = 'Basic' | 'Standard';
 export type TransformMode = 'translate' | 'rotate' | 'scale';
 export interface ProtoSettings {
 	showGrid: boolean;
+	bgColor: string;
 }
 
 export interface ProtoMesh {

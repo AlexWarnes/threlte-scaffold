@@ -1,4 +1,7 @@
 <script lang="ts">
+	import CarbonChevronDown from '~icons/carbon/chevron-down';
+	import CarbonChevronUp from '~icons/carbon/chevron-up';
+	import CarbonCode from '~icons/carbon/code';
 	import type { ThrelteContext } from '@threlte/core';
 	import { slide } from 'svelte/transition';
 	import { editablePropsByLight, editablePropsByMaterial, updateScene } from '$lib/globalState';
@@ -17,7 +20,11 @@
 		};
 		if (ctx?.scene) {
 			for (let obj of ctx?.scene.children) {
-				if ((obj as Mesh).isMesh && !obj.userData.isThrelteGrid && obj.userData.name !== "background") {
+				if (
+					(obj as Mesh).isMesh &&
+					!obj.userData.isThrelteGrid &&
+					obj.userData.name !== 'background'
+				) {
 					temp.meshes.push(obj);
 				} else if ((obj as Light).isLight) {
 					temp.lights.push(obj);
@@ -87,7 +94,14 @@
 		tabindex="0"
 		on:keydown={handleKeydown}
 	>
-		<h2>Code Viewer</h2>
+		<CarbonCode />
+		<h2 class="panel-title">Code Viewer</h2>
+		<span class="flex-spacer"></span>
+		{#if isOpen}
+			<CarbonChevronDown />
+		{:else}
+			<CarbonChevronUp />
+		{/if}
 	</div>
 	{#if isOpen}
 		<div class="content-box" transition:slide>
@@ -140,8 +154,10 @@
 		padding: 0.875rem;
 		cursor: pointer;
 		background-color: var(--tweak-bg-light);
-		/* border: 1px solid transparent; */
-		transition: background 0.2s ease;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		transition: background-color 0.2s ease;
 	}
 	.header:hover {
 		/* LIGHTER EFFECT */
@@ -152,7 +168,7 @@
 		/* border-color: #00000059; */
 	}
 	.header h2 {
-		margin: 0;
+		margin: 0 0 0 0.5rem;
 		font-size: 0.75rem;
 	}
 
