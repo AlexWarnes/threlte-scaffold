@@ -31,6 +31,12 @@ body {
 
 a {
 	color: #5f9ea0;
+
+	/* Styling for link icons */
+	display: inline-flex;
+	justify-content: space-between;
+	align-items: flex-end;
+	gap: 0.25rem;
 }
 
 .panel {
@@ -59,7 +65,7 @@ button {
 
 button.primary {
 	background-color: var(--primary);
-	color: var(--tweak-fg);
+	color: #fafbfc;
 	box-shadow: var(--theater-shadow);
 }
 button.secondary {

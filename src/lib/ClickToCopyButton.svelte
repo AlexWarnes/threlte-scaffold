@@ -30,7 +30,7 @@
 	class:secondary={copyStatus !== 'SUCCESS'}
 	class="copy-btn"
 >
-	<span>{copyStatus === 'SUCCESS' ? 'Copied!' : 'Copy'}</span>
+	<span>{copyStatus === 'SUCCESS' ? 'COPIED!' : 'COPY'}</span>
 	<CarbonCopy />
 </button>
 

@@ -30,7 +30,7 @@ const defaultGeometries: ProtoGeometry[] = [
 ];
 const defaultLights: ProtoLight[] = [
 	{
-		id: '001',
+		id: 'Directional_Light 001',
 		type: 'Directional',
 		props: {
 			args: [],
@@ -98,7 +98,7 @@ export const meshes: Readable<ProtoMesh[]> = derived(
 	([geoList, matLib]) => {
 		return geoList.map((geo) => {
 			return {
-				id: 'mesh-' + geo.id,
+				id: `${geo.type}_mesh ${geo.id}`,
 				geometry: geo,
 				userData: {},
 				material: matLib[geo.materialID] || '001'
@@ -110,6 +110,7 @@ export const selection = writable<string | null>(null);
 export const selectionRef = writable<any | null>(null);
 export const transformMode = writable<TransformMode>('translate');
 export const transformSnap = writable<number | null>(null);
+export const allowInteractions = writable<boolean>(true);
 export const updateSceneTrigger = rxWritable(1);
 export const updateScene = updateSceneTrigger.pipe(
 	throttleTime(350)
@@ -141,7 +142,7 @@ export function addMesh(geometryType: ProtoGeometryType, materialID: string) {
 export function addLight(lightType: ProtoLightType) {
 	lightCount += 1;
 	const newLight: ProtoLight = {
-		id: lightCount.toString().padStart(3, '0'),
+		id: `${lightType}_light ${lightCount.toString().padStart(3, '0')}`,
 		type: lightType,
 		props: {
 			args: [],

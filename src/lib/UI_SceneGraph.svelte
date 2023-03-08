@@ -43,7 +43,7 @@
 					on:keydown={(evt) => handleKeydown(evt, light.id)}
 				>
 					<button class="tertiary" class:selected={$selection === light.id}>
-						{light.type}_Light {light.id}
+						{light.id}
 					</button>
 				</li>
 			{/each}
@@ -53,7 +53,6 @@
 					on:keydown={(evt) => handleKeydown(evt, mesh.id)}
 				>
 					<button class="tertiary" class:selected={$selection === mesh.id}>
-						{mesh.geometry.type}
 						{mesh.id}
 					</button>
 				</li>

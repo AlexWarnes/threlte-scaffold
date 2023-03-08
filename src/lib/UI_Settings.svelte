@@ -13,7 +13,7 @@
 	</label>
 	<label>
 		Background
-		<input type="color" bind:value={$settings.bgColor} />
+		<input type="color" bind:value="{$settings.bgColor}" />
 	</label>
   <!-- <button on:click={() => localStorage.clear()}>CLEAR</button> -->
 </div>

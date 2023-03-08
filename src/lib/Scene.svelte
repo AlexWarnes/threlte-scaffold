@@ -1,12 +1,19 @@
 <script>
-	import { T, OrbitControls } from '@threlte/core';
+	import { T, OrbitControls, InteractiveObject } from '@threlte/core';
 	import { Grid } from '@threlte/extras';
 
 	import Effects from './Effects.svelte';
-	import { meshes, lights, settings, transformMode, transformSnap } from './globalState';
+	import {
+		meshes,
+		lights,
+		settings,
+		transformMode,
+		transformSnap,
+		allowInteractions,
+		setSelection
+	} from './globalState';
 	import MeshConverter from './MeshConverter.svelte';
 	import LightConverter from './LightConverter.svelte';
-	import { Editable } from '@threlte/theatre';
 	import { useKeyboardControls } from 'svelte-kbc';
 	const { t, r, s, shift } = useKeyboardControls();
 
@@ -29,7 +36,7 @@
 	<T.IcosahedronGeometry />
 	<T.MeshStandardMaterial color="red" />
 </T.Mesh> -->
-<T.Mesh userData={{ name: 'background' }}>
+<T.Mesh userData={{ name: 'background' }} let:ref={bgRef}>
 	<T.SphereGeometry args={[500]} />
 	<T.MeshBasicMaterial color={$settings.bgColor} side={1} let:ref>
 		<!-- <Editable name="Background" color /> -->
