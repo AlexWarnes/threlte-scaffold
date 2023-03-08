@@ -2,7 +2,8 @@
 	import { onDestroy } from 'svelte';
 	import { addMesh, materials, meshes, deleteMesh } from './globalState';
 	import type { ProtoGeometryType, ProtoMaterial } from './models';
-
+	import CarbonAdd from '~icons/carbon/add'
+	
 	let showDeleteMenu = false;
 	let geoType: ProtoGeometryType = 'Box';
 	let matID: string = '001';
@@ -40,7 +41,9 @@
 				{/each}
 			</select>
 		</label>
-		<button class="primary" on:click={() => addMesh(geoType, matID)}>Add Mesh</button>
+		<button class="primary" on:click={() => addMesh(geoType, matID)}>
+			<CarbonAdd />
+			Add Mesh</button>
 	</div>
 </div>
 

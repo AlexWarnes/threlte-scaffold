@@ -31,6 +31,12 @@ body {
 
 a {
 	color: #5f9ea0;
+
+	/* Styling for link icons */
+	display: inline-flex;
+	justify-content: space-between;
+	align-items: flex-end;
+	gap: 0.25rem;
 }
 
 .panel {
@@ -51,11 +57,15 @@ button {
 	line-height: 1.25rem;
 	font-size: 0.75rem;
 	font-family: 'Roboto Mono', monospace;
+	display: inline-flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.5rem;
 }
 
 button.primary {
 	background-color: var(--primary);
-	color: var(--tweak-fg);
+	color: #fafbfc;
 	box-shadow: var(--theater-shadow);
 }
 button.secondary {
@@ -64,4 +74,12 @@ button.secondary {
 button.tertiary {
 	color: var(--tweak-fg);
 	background-color: var(--tweak-bg-light);
+}
+
+input, select {
+	margin: 0.325rem 0 0;
+}
+
+.flex-spacer {
+	flex-grow: 1;
 }

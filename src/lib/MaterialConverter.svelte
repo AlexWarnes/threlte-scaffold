@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { T } from '@threlte/core';
-	import { Editable } from '@threlte/theatre';
 	import { syncSceneToCode } from './globalState';
 	import type { ProtoMaterial } from './models';
 	export let material: ProtoMaterial;

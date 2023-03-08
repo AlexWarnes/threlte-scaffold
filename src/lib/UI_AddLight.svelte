@@ -2,6 +2,7 @@
 	import { onDestroy } from 'svelte';
 	import { addLight, deleteLight, lights } from './globalState';
 	import type { ProtoLightType } from './models';
+	import CarbonAdd from '~icons/carbon/add'
 
 	let showDeleteMenu = false;
 	let lightType: ProtoLightType = 'Ambient';
@@ -22,7 +23,9 @@
 				{/each}
 			</select>
 		</label>
-		<button class="primary" on:click={() => addLight(lightType)}>Add Light</button>
+		<button class="primary" on:click={() => addLight(lightType)}>
+			<CarbonAdd />
+			Add Light</button>
 	</div>
 </div>
 

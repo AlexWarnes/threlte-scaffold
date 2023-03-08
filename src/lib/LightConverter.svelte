@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { T, type ThreltePointerEvent } from '@threlte/core';
-	import { Editable } from '@threlte/theatre';
 	import { setSelection, selection, setSelectionRef } from './globalState';
 	import type { ProtoLight } from './models';
 	export let light: ProtoLight;

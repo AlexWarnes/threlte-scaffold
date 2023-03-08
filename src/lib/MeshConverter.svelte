@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { InteractiveObject, T, TransformControls, type ThreltePointerEvent } from '@threlte/core';
-	import type { Vector3Tuple } from 'three';
+	import { afterUpdate, onMount } from 'svelte';
 	import GeometryConverter from './GeometryConverter.svelte';
 	import {
 		selection,
@@ -9,21 +9,33 @@
 		selectionRef,
 		setSelectionRef,
 		transformMode,
-		transformSnap
+		transformSnap,
+		allowInteractions
 	} from './globalState';
 	import MaterialConverter from './MaterialConverter.svelte';
 	export let mesh: any;
 	let ref: any;
 
-	let preventClickHandler = false;
+	// let preventClickHandler = false;
 	function handleClick(evt: CustomEvent<ThreltePointerEvent>) {
-		if (preventClickHandler) return;
-		setSelection(mesh.id);
+		if ($allowInteractions) {
+			setSelection(mesh.id);
+		};
 	}
 
 	$: if ($selection === mesh.id) {
 		setSelectionRef(ref);
 	}
+
+	onMount(() => {
+		// console.log("onMount:", mesh.id)
+		// Set new meshes as selected
+		setSelection(mesh.id)
+	})
+	
+	afterUpdate(() => {
+		// console.log("afterUpdate:", mesh.id)
+	})
 </script>
 
 <T.Mesh let:ref={meshRef} bind:ref>
@@ -34,8 +46,8 @@
 	{#if $selection === mesh.id}
 		<TransformControls
 			on:change={syncSceneToCode}
-			on:mouseDown={() => (preventClickHandler = true)}
-			on:mouseUp={() => setTimeout(() => (preventClickHandler = false))}
+			on:mouseDown={() => (allowInteractions.set(false))}
+			on:mouseUp={() => setTimeout(() => (allowInteractions.set(true)))}
 			mode={$transformMode}
 			translationSnap={$transformSnap}
 			scaleSnap={$transformSnap}

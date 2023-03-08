@@ -4,11 +4,13 @@
 	import { editablePropsByLight, editablePropsByMaterial, updateScene } from '$lib/globalState';
 	import type { Euler, Light, Material, Mesh, Vector3 } from 'three';
 	import ClickToCopyButton from './ClickToCopyButton.svelte';
+	import CarbonLaunch from '~icons/carbon/launch';
+	import CarbonChevronDown from '~icons/carbon/chevron-down';
 
 	export let ctx: ThrelteContext;
 	let meshes: any[] = [];
 	let lights: any[] = [];
-	let isOpen = false;
+	export let showActionsFor: string | null;
 
 	function filterObjects(ctx: ThrelteContext): { meshes: any[]; lights: any[] } {
 		let temp = {
@@ -17,7 +19,11 @@
 		};
 		if (ctx?.scene) {
 			for (let obj of ctx?.scene.children) {
-				if ((obj as Mesh).isMesh && !obj.userData.isThrelteGrid && obj.userData.name !== "background") {
+				if (
+					(obj as Mesh).isMesh &&
+					!obj.userData.isThrelteGrid &&
+					obj.userData.name !== 'background'
+				) {
 					temp.meshes.push(obj);
 				} else if ((obj as Light).isLight) {
 					temp.lights.push(obj);
@@ -27,11 +33,6 @@
 
 		return temp;
 	}
-	const handleKeydown = (evt: any) => {
-		if (evt && evt.key && evt.key === 'Enter') {
-			isOpen = !isOpen;
-		}
-	};
 
 	$: if ($updateScene) {
 		const objs = filterObjects(ctx);
@@ -78,36 +79,43 @@
 	}
 </script>
 
-<div class="panel">
-	<div
-		class="header"
-		on:click={() => (isOpen = !isOpen)}
-		role="button"
-		aria-haspopup="menu"
-		tabindex="0"
-		on:keydown={handleKeydown}
-	>
-		<h2>Code Viewer</h2>
-	</div>
-	{#if isOpen}
-		<div class="content-box" transition:slide>
-			<h3>Threlte</h3>
-			<ClickToCopyButton elementID="scaffold-code" />
+<!-- TODO: Options panel for imports (false), canvas (false), bg (true), camera (false) -->
+<div class="panel" transition:slide>
+	<div class="content-box">
+		<div class="header">
+			<h3 class="title">Threlte Code</h3>
+			<button class="tertiary" on:click={() => (showActionsFor = null)}>CLOSE<CarbonChevronDown /></button>
+		</div>
+		<p class="subtitle">
+			This is the threlte markup generated for your current scene configuration. You can use this in
+			any project made with threlte.
+		</p>
+		<p>
+			Try it on <a
+				href="https://stackblitz.com/edit/threlte-v5-starter?file=README.md"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="external-link"
+				>StackBlitz
+				<CarbonLaunch />
+			</a>
+		</p>
+		<ClickToCopyButton elementID="scaffold-code" />
 
-			<!-- ********* CODE LOGIC ********* -->
+		<!-- ********* CODE LOGIC ********* -->
 
-			<pre id="scaffold-code">
+		<pre id="scaffold-code">
 {`<Canvas>`}
 
 	{`<!-- LIGHTS -->`}
 
   {#each lights as light (light.id)}
-					{`<T.${light.type} ${lightPropsToString(light, '\n\t\t')} \n\t/>\n\t`}
-				{/each}
+				{`<T.${light.type} ${lightPropsToString(light, '\n\t\t')} \n\t/>\n\t`}
+			{/each}
 	
 	{`<!-- MESHES -->`}
 	{#each meshes as obj (obj.id)}
-					{`
+				{`
 	<T.${obj.constructor.name}
 		position={${v3ToPropString(obj.position)}}
 		rotation={${v3ToPropString(obj.rotation)}}
@@ -117,13 +125,12 @@
 		<T.${obj.material.type} ${materialPropsToString(obj.material, '\n\t\t\t')} \n\t\t/>
   </T.${obj.constructor.name}>
           `}
-				{/each}
+			{/each}
 
 {`</Canvas>`}
 
   		</pre>
-		</div>
-	{/if}
+	</div>
 </div>
 
 <style>
@@ -136,25 +143,6 @@
 		flex-direction: column;
 		padding: 0;
 	}
-	.header {
-		padding: 0.875rem;
-		cursor: pointer;
-		background-color: var(--tweak-bg-light);
-		/* border: 1px solid transparent; */
-		transition: background 0.2s ease;
-	}
-	.header:hover {
-		/* LIGHTER EFFECT */
-		background-color: var(--tweak-bg-light-hover);
-
-		/* DARKER EFFECT */
-		/* background-color: var(--active-dark); */
-		/* border-color: #00000059; */
-	}
-	.header h2 {
-		margin: 0;
-		font-size: 0.75rem;
-	}
 
 	.content-box {
 		padding: 1.125rem 1.125rem 0;
@@ -164,6 +152,21 @@
 		display: flex;
 		flex-direction: column;
 	}
+
+	.header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.title {
+		margin-top: 0;
+	}
+
+	.subtitle {
+		margin: 0;
+	}
+
 	pre {
 		font-size: 0.75rem;
 		font-family: 'Roboto Mono', monospace;

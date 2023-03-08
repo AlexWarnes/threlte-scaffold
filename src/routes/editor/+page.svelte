@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
 	import { Canvas, ContextBridge, type ThrelteContext } from '@threlte/core';
-	import { Studio, Project, Sheet } from '@threlte/theatre';
 	import Scene from '$lib/Scene.svelte';
 	import UI_CodeView from '$lib/UI_CodeView.svelte';
 	import UI_Settings from '$lib/UI_Settings.svelte';
@@ -11,6 +10,7 @@
 	import { selectionRef, selection, syncSceneToCode, setSelectionRef } from '$lib/globalState';
 	import { KeyboardControls } from 'svelte-kbc';
 	import { keyConfig } from '$lib/shortcuts';
+	import ExportsBar from '$lib/ExportsBar.svelte';
 	let ctx: ThrelteContext;
 
 	$: if ($selection === null) {
@@ -31,7 +31,8 @@
 			<ActionsBar />
 		</div>
 		<div class="code-view-box">
-			<UI_CodeView {ctx} />
+			<!-- <UI_CodeView {ctx} /> -->
+			<ExportsBar {ctx} />
 		</div>
 		<div class="settings-box">
 			<UI_Settings />
