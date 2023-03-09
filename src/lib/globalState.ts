@@ -11,73 +11,54 @@ import type {
 	ProtoSettings,
 	TransformMode
 } from './models';
+import { defaultMaterial, defaultMaterials } from './materialHelpers';
 
 const defaultSettings: ProtoSettings = {
 	showGrid: true,
-	bgColor: "#000000",
+	bgColor: '#000000'
 };
-const defaultGeometries: ProtoGeometry[] = [
+const defaultMeshList: ProtoMesh[] = [
 	{
-		id: '001',
-		type: 'Box',
-		props: {
-			args: [],
-			userData: {}
+		id: 'mesh-001',
+		name: 'mesh-001',
+		initialProps: {
+			position: [0, 0, 0],
+			rotation: [0, 0, 0],
+			scale: [1, 1, 1]
 		},
-		meshProps: {},
-		materialID: '002'
+		geometry: {
+			id: 'geo-001',
+			type: 'Box',
+			props: {
+				args: []
+			}
+		},
+		materialID: 'mat-002'
 	}
 ];
-const defaultLights: ProtoLight[] = [
+const defaultLightList: ProtoLight[] = [
 	{
 		id: 'Directional_Light 001',
 		type: 'Directional',
 		props: {
-			args: [],
-			position: [5, 5, 5],
-			userData: {}
+			color: '#ffffff',
+			intensity: 1
+		},
+		initialProps: {
+			position: [5, 5, 5]
 		}
+	},
+	{
+		id: 'Ambient_Light 002',
+		type: 'Ambient',
+		props: {
+			color: '#ffffff',
+			intensity: 0.25
+		},
+		initialProps: {}
 	}
 ];
 
-const defaultMaterials: { [key: string]: ProtoMaterial } = {
-	'001': {
-		id: '001',
-		type: 'Basic',
-		props: {
-			color: 'green',
-			userData: {}
-		}
-	},
-	'002': {
-		id: '002',
-		type: 'Standard',
-		props: {
-			color: 'red',
-			metalness: 0.1,
-			roughness: 0.9,
-			// color: '#ff3e00',
-			userData: {}
-		}
-	}
-};
-
-export const editablePropsByMaterial: { [key: string]: string[] } = {
-	MeshBasicMaterial: ['color', 'transparent', 'opacity', 'wireframe', 'toneMapped'],
-	MeshStandardMaterial: [
-		'color',
-		'metalness',
-		'roughness',
-		'emissive',
-		'emissiveIntensity',
-		'transparent',
-		'opacity',
-		'wireframe',
-		'flatShading',
-		'toneMapped'
-		// 'userData'
-	]
-};
 export const editablePropsByLight: { [key: string]: string[] } = {
 	AmbientLight: ['color', 'intensity'],
 	DirectionalLight: ['color', 'intensity', 'position'],
@@ -85,37 +66,16 @@ export const editablePropsByLight: { [key: string]: string[] } = {
 	HemisphereLight: ['color', 'groundColor', 'intensity', 'position']
 };
 
-let geoCount = defaultGeometries.length;
-let matCount = defaultMaterials.length;
-let lightCount = defaultLights.length;
+let meshCount = defaultMeshList.length;
+let lightCount = defaultLightList.length;
 
-export const settings = writable(defaultSettings);
-export const lights = writable(defaultLights);
-export const geometries = writable<ProtoGeometry[]>(defaultGeometries);
-export const materials = writable(defaultMaterials);
-export const meshes: Readable<ProtoMesh[]> = derived(
-	[geometries, materials],
-	([geoList, matLib]) => {
-		return geoList.map((geo) => {
-			return {
-				id: `${geo.type}_mesh ${geo.id}`,
-				geometry: geo,
-				userData: {},
-				material: matLib[geo.materialID] || '001'
-			};
-		});
-	}
-);
+export const settings = writable<ProtoSettings>(defaultSettings);
+export const lights = writable<ProtoLight[]>(defaultLightList);
+export const meshes = writable<ProtoMesh[]>(defaultMeshList);
+
+// SELECTION STATE
 export const selection = writable<string | null>(null);
 export const selectionRef = writable<any | null>(null);
-export const transformMode = writable<TransformMode>('translate');
-export const transformSnap = writable<number | null>(null);
-export const allowInteractions = writable<boolean>(true);
-export const updateSceneTrigger = rxWritable(1);
-export const updateScene = updateSceneTrigger.pipe(
-	throttleTime(350)
-)
-
 export const selectionDetails = derived(
 	[selection, meshes, lights],
 	([$selection, $meshes, $lights]) => {
@@ -124,19 +84,19 @@ export const selectionDetails = derived(
 		return [...$meshes, ...$lights].find((obj) => obj.id === $selection);
 	}
 );
+
+// TRANSFORM STATE
+export const transformMode = writable<TransformMode>('translate');
+export const transformSnap = writable<number | null>(null);
+export const allowInteractions = writable<boolean>(true);
+
+// SCENE GRAPH SYNCING FOR CODE GEN
+export const updateSceneTrigger = rxWritable(1);
+export const updateScene = updateSceneTrigger.pipe(throttleTime(350));
 export function addMesh(geometryType: ProtoGeometryType, materialID: string) {
-	geoCount += 1;
-	const newGeo: ProtoGeometry = {
-		id: geoCount.toString().padStart(3, '0'),
-		type: geometryType,
-		props: {
-			args: [],
-			userData: {}
-		},
-		meshProps: {},
-		materialID
-	};
-	geometries.update((current) => [newGeo, ...current]);
+	meshCount += 1;
+	const newMesh = generateMeshSkeleton(meshCount, geometryType, materialID);
+	meshes.update((current) => [newMesh, ...current]);
 }
 
 export function addLight(lightType: ProtoLightType) {
@@ -144,17 +104,10 @@ export function addLight(lightType: ProtoLightType) {
 	const newLight: ProtoLight = {
 		id: `${lightType}_light ${lightCount.toString().padStart(3, '0')}`,
 		type: lightType,
-		props: {
-			args: [],
-			position: [5, 5, 5],
-			userData: {}
-		}
+		initialProps: {},
+		props: {}
 	};
 	lights.update((current) => [newLight, ...current]);
-}
-
-export function syncSceneToCode() {
-	updateSceneTrigger.update((n: number) => n + 1);
 }
 
 export function deleteLight(id: string) {
@@ -164,11 +117,15 @@ export function deleteLight(id: string) {
 	lights.update((current) => current.filter((l) => l.id !== id));
 }
 
+export function syncSceneToCode() {
+	updateSceneTrigger.update((n: number) => n + 1);
+}
+
 export function deleteMesh(id: string) {
 	if (get(selection) === id) {
 		clearSelection();
 	}
-	geometries.update((current) => current.filter((geo) => geo.id !== id));
+	meshes.update((current) => current.filter((mesh) => mesh.id !== id));
 }
 
 export function setSelection(id: string | null): void {
@@ -185,24 +142,31 @@ function clearSelection() {
 }
 
 export function duplicateMesh(protoMesh: ProtoMesh, meshRef: any) {
-	// add material to library
-	// duplicate geo with attributes
-	//
-	geoCount += 1;
-	const newGeo: ProtoGeometry = {
-		id: geoCount.toString().padStart(3, '0'),
-		type: protoMesh.geometry.type,
-		props: {
-			args: [],
-			userData: {}
-		},
-		meshProps: {
-			// position: meshRef.position.clone().setX(meshRef.position.x + 1),
-			// rotation: meshRef.rotation.clone(),
-			// scale: meshRef.scale.clone()
-		},
-		materialID: protoMesh.geometry.materialID
+	const initialPosition = meshRef.position.clone().addScalar(1);
+	meshCount += 1;
+
+	const newMesh = generateMeshSkeleton(meshCount, protoMesh.geometry.type, protoMesh.materialID);
+	newMesh.initialProps = {
+		position: initialPosition,
+		rotation: meshRef.rotation.clone(),
+		scale: meshRef.scale.clone()
 	};
-	console.log("dupe:", newGeo)
-	geometries.update((current) => [newGeo, ...current]);
+	meshes.update((current) => [newMesh, ...current]);
+}
+
+function generateMeshSkeleton(idNum: number, geoType: ProtoGeometryType, matID: string): ProtoMesh {
+	const id = idNum.toString().padStart(3, '0');
+	return {
+		id: `mesh-${id}`,
+		name: `mesh-${id}`,
+		initialProps: {},
+		geometry: {
+			id: `geo-${id}`,
+			type: geoType,
+			props: {
+				args: []
+			}
+		},
+		materialID: matID
+	};
 }

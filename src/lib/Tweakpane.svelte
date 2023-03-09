@@ -1,33 +1,28 @@
 <script lang="ts">
 	import type { ThrelteContext } from '@threlte/core';
-	import {
-		syncSceneToCode,
-	} from './globalState';
+	import { selectionDetails, syncSceneToCode } from './globalState';
+	import { materials, updateMaterialByID } from './materialHelpers';
 	import { Pane } from 'tweakpane';
-	import { onDestroy, onMount, } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 
 	import { ColorGUIHelper } from './Helpers';
+	import type { ProtoGeometry, ProtoMaterial, ProtoMesh } from './models';
 	export let ctx: ThrelteContext;
 	export let objectData: any;
 	export let propKeys: any[] = [];
-	export let matKeys: any[] = [];
 	export let title: string = '';
+	export let materialID: string;
 
-  let preventSync = false;
+	let preventSync = false;
 	let containerRef: HTMLElement;
 	let pane: Pane;
-
-	const matWillNeedUpdate: any = {
-		transparent: true,
-		flatShading: true
-	};
 
 	onMount(() => {
 		initPane(containerRef);
 	});
 
 	function initPane(container: HTMLElement) {
-		// console.log('initPane:', { objectData, propKeys, matKeys, title });
+		console.log('initPane:', { objectData, propKeys, materialID, title });
 		pane = new Pane({
 			container,
 			title
@@ -47,24 +42,16 @@
 			}
 		});
 
-		// Add material inputs if present
-		if (matKeys.length) {
+		if (materialID) {
 			const mat = pane.addFolder({
 				title: 'Material',
 				expanded: true
 			});
 
-			// Add the inputs to the mat folder
-			matKeys.forEach((key) => {
-				if (objectData.material[key]?.isColor) {
-					mat.addInput(new ColorGUIHelper(objectData.material, key), 'value', { label: key });
-				} else if (matWillNeedUpdate[key]) {
-					mat
-						.addInput(objectData.material, key, { step: 0.1 })
-						.on('change', () => (objectData.material.needsUpdate = true));
-				} else {
-					mat.addInput(objectData.material, key, { step: 0.1 });
-				}
+			Object.keys($materials[materialID].props).forEach((key) => {
+				mat.addInput($materials[materialID].props, key, { step: 0.1 }).on('change', (evt) => {
+					updateMaterialByID(materialID, evt.presetKey as keyof ProtoMaterial, evt.value);
+				});
 			});
 		}
 
@@ -73,15 +60,18 @@
 	}
 
 	function handleChange() {
-    if (preventSync) return;
+		if (preventSync) return;
+		// TODO: remove after updating light props in state
 		ctx.invalidate();
 		syncSceneToCode();
 	}
 
 	$: if (objectData && pane) {
-    preventSync = true;
+		// Refresh pane when data changes in scene graph (like when TransformControls move)
+		console.log('refresh pane');
+		preventSync = true;
 		pane.refresh();
-    setTimeout(() => preventSync = false)
+		setTimeout(() => (preventSync = false));
 	}
 
 	onDestroy(() => {

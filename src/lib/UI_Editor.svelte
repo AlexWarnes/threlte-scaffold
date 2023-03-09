@@ -1,12 +1,11 @@
 <script lang="ts">
 	import type { ThrelteContext } from '@threlte/core';
-	import CarbonTrashCan from '~icons/carbon/trash-can'
+	import CarbonTrashCan from '~icons/carbon/trash-can';
 	import { slide } from 'svelte/transition';
 	import {
 		deleteLight,
 		deleteMesh,
 		editablePropsByLight,
-		editablePropsByMaterial,
 		selection,
 		selectionDetails,
 		selectionRef,
@@ -34,10 +33,13 @@
 			deleteLight($selection as string);
 		}
 	}
+
+	// $: material = $materials[($selectionDetails as ProtoMesh)?.geometry?.materialID]
+	// $: console.log(material)
 	function handleDuplicate() {
 		if (!details) return;
 
-    // TODO: handle object duplication
+		// TODO: handle object duplication
 		if (isMesh(details.type)) {
 			duplicateMesh($selectionDetails as ProtoMesh, $selectionRef);
 		} else if (isLight(details.type)) {
@@ -46,8 +48,8 @@
 	}
 	function handleFocus() {
 		if (!details) return;
-    // TODO: set target to selectionRef
-  }
+		// TODO: set target to selectionRef
+	}
 
 	$: if ($updateScene) {
 		details = ctx?.scene.children.find((obj) => obj.uuid === $selectionRef?.uuid);
@@ -56,18 +58,21 @@
 	$: if (details) {
 		if (isMesh(details.type)) {
 			propKeys = ['position', 'rotation', 'scale'];
-			matKeys = editablePropsByMaterial[details.material.type];
 		} else if (isLight(details.type)) {
 			matKeys = [];
+			// TODO: light position, when available, will be edited directly on details (like for mesh)
+			// editableProps will be stored on the ProtoLight
 			propKeys = editablePropsByLight[details.type];
 		}
 	}
+
+	$: materialID = ($selectionDetails as ProtoMesh)?.materialID;
 </script>
 
-{#if $selection && $selectionRef && details}
+{#if $selection && $selectionRef && details && selectionDetails}
 	<div id="editor-panel" class="container panel">
 		{#key $selection}
-			<Tweakpane {ctx} objectData={details} {propKeys} {matKeys} title={$selection} />
+			<Tweakpane title={$selection} {ctx} objectData={details} {propKeys} {materialID} />
 		{/key}
 		<div class="button-box">
 			<button on:click={handleFocus} class="secondary">FOCUS</button>
@@ -75,7 +80,8 @@
 			<span class="flex-spacer" />
 			<button on:click={handleDelete} class="delete secondary">
 				<CarbonTrashCan />
-				DELETE</button>
+				DELETE</button
+			>
 		</div>
 	</div>
 {/if}
@@ -97,7 +103,7 @@
 		gap: 1rem;
 	}
 
-  button.delete {
-    background-color: #cd5c5c;
-  }
+	button.delete {
+		background-color: #cd5c5c;
+	}
 </style>

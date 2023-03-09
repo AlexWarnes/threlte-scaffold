@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { InteractiveObject, T, TransformControls, type ThreltePointerEvent } from '@threlte/core';
-	import { afterUpdate, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import GeometryConverter from './GeometryConverter.svelte';
 	import {
 		selection,
@@ -13,41 +13,46 @@
 		allowInteractions
 	} from './globalState';
 	import MaterialConverter from './MaterialConverter.svelte';
-	export let mesh: any;
+	export let id: string;
+	export let name: string;
+	export let initialProps: any;
+	export let geometry: any;
+	export let materialID: any;
+
 	let ref: any;
 
-	// let preventClickHandler = false;
 	function handleClick(evt: CustomEvent<ThreltePointerEvent>) {
 		if ($allowInteractions) {
-			setSelection(mesh.id);
-		};
+			setSelection(id);
+		}
 	}
 
-	$: if ($selection === mesh.id) {
+	$: if ($selection === id) {
 		setSelectionRef(ref);
 	}
 
 	onMount(() => {
-		// console.log("onMount:", mesh.id)
 		// Set new meshes as selected
-		setSelection(mesh.id)
-	})
-	
-	afterUpdate(() => {
-		// console.log("afterUpdate:", mesh.id)
-	})
+		setSelection(id);
+
+		// Set initial values on mesh ref
+		const { position, rotation, scale } = initialProps;
+		if (position) ref.position.set(position[0], position[1], position[2]);
+		if (rotation) ref.rotation.set(rotation[0], rotation[1], rotation[2]);
+		if (scale) ref.scale.set(scale[0], scale[1], scale[2]);
+	});
 </script>
 
 <T.Mesh let:ref={meshRef} bind:ref>
-	<GeometryConverter geometry={mesh.geometry} />
-	<MaterialConverter material={mesh.material} />
+	<GeometryConverter {geometry} />
+	<MaterialConverter {materialID} />
 
 	<InteractiveObject interactive object={meshRef} on:click={handleClick} />
-	{#if $selection === mesh.id}
+	{#if $selection === id}
 		<TransformControls
-			on:change={syncSceneToCode}
-			on:mouseDown={() => (allowInteractions.set(false))}
-			on:mouseUp={() => setTimeout(() => (allowInteractions.set(true)))}
+			on:objectChange={syncSceneToCode}
+			on:mouseDown={() => allowInteractions.set(false)}
+			on:mouseUp={() => setTimeout(() => allowInteractions.set(true))}
 			mode={$transformMode}
 			translationSnap={$transformSnap}
 			scaleSnap={$transformSnap}

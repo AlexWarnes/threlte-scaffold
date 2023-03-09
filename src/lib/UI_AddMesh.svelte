@@ -1,12 +1,13 @@
 <script lang="ts">
 	import { onDestroy } from 'svelte';
-	import { addMesh, materials, meshes, deleteMesh } from './globalState';
+	import { addMesh, meshes, deleteMesh } from './globalState';
 	import type { ProtoGeometryType, ProtoMaterial } from './models';
-	import CarbonAdd from '~icons/carbon/add'
-	
+	import CarbonAdd from '~icons/carbon/add';
+	import { materials } from './materialHelpers';
+
 	let showDeleteMenu = false;
 	let geoType: ProtoGeometryType = 'Box';
-	let matID: string = '001';
+	let matID: string = 'mat-002';
 	let geoOptions: ProtoGeometryType[] = [
 		'Box',
 		'Sphere',
@@ -37,13 +38,14 @@
 			>Material
 			<select bind:value={matID}>
 				{#each matOptions as opt}
-					<option value={opt.id}>{opt.type}</option>
+					<option value={opt.id}>{opt.name}</option>
 				{/each}
 			</select>
 		</label>
 		<button class="primary" on:click={() => addMesh(geoType, matID)}>
 			<CarbonAdd />
-			Add Mesh</button>
+			Add Mesh</button
+		>
 	</div>
 </div>
 
@@ -58,14 +60,14 @@
 	.add-mesh-row {
 		width: 100%;
 		display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 1rem;
+		justify-content: space-between;
+		align-items: flex-end;
+		gap: 1rem;
 	}
 	button {
-    cursor: pointer;
-    transition: background-color .2s ease;
-  }
+		cursor: pointer;
+		transition: background-color 0.2s ease;
+	}
 	label {
 		margin: 0 0.5rem;
 	}

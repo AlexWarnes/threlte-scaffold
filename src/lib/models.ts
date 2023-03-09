@@ -1,3 +1,6 @@
+import type { Position, Rotation, Scale } from '@threlte/core';
+import type { Vector3Tuple } from 'three';
+
 export type ProtoGeometryType =
 	| 'Box'
 	| 'Sphere'
@@ -16,9 +19,14 @@ export interface ProtoSettings {
 
 export interface ProtoMesh {
 	id: string;
+	name: string;
+	initialProps: {
+		position?: Vector3Tuple;
+		rotation?: Vector3Tuple;
+		scale?: Vector3Tuple;
+	};
 	geometry: ProtoGeometry;
-	userData: any;
-	material: ProtoMaterial;
+	materialID: string;
 }
 
 export interface ProtoGeometry {
@@ -26,26 +34,23 @@ export interface ProtoGeometry {
 	type: ProtoGeometryType;
 	props: {
 		args: any[];
-		userData: any;
 	};
-	meshProps: {
-		[key: string]: any;
-	};
-	materialID: string;
 }
 export interface ProtoMaterial {
 	id: string;
 	type: ProtoMaterialType;
+	name: string;
 	props: {
-		userData: any;
 		[key: string]: any;
 	};
 }
 export interface ProtoLight {
 	id: string;
 	type: ProtoLightType;
+	initialProps: {
+		position?: Vector3Tuple;
+	};
 	props: {
-		userData: any;
 		[key: string]: any;
 	};
 }

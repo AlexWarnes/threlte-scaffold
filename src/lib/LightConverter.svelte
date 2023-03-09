@@ -1,33 +1,41 @@
 <script lang="ts">
 	import { T, type ThreltePointerEvent } from '@threlte/core';
+	import { onMount } from 'svelte';
 	import { setSelection, selection, setSelectionRef } from './globalState';
-	import type { ProtoLight } from './models';
-	export let light: ProtoLight;
+	import type { ProtoLight, ProtoLightType } from './models';
+	export let id: string;
+	export let type: ProtoLightType;
+	export let initialProps: any;
+	export let props: any;
+
 	let ref: any;
 
-	// let preventClickHandler = false;
-	// function handleClick(evt: CustomEvent<ThreltePointerEvent>) {
-	// 	if (preventClickHandler) return;
-	// 	setSelection(light.id);
-	// }
+	onMount(() => {
+		// Set new lights as selected
+		setSelection(id);
 
-	$: if ($selection === light.id) {
+		// Set initial values on light ref
+		const { position } = initialProps;
+		if (position) ref.position.set(position[0], position[1], position[2]);
+	});
+
+	$: if ($selection === id) {
 		setSelectionRef(ref);
 	}
 </script>
 
-{#if light.type === 'Ambient'}
-	<T.AmbientLight {...light.props} bind:ref />
-{:else if light.type === 'Directional'}
-	<T.DirectionalLight {...light.props} let:ref={lightRef} bind:ref>
+{#if type === 'Ambient'}
+	<T.AmbientLight {...props} bind:ref />
+{:else if type === 'Directional'}
+	<T.DirectionalLight {...props} let:ref={lightRef} bind:ref>
 		<T.DirectionalLightHelper args={[lightRef, 5]} />
 	</T.DirectionalLight>
-{:else if light.type === 'Point'}
-	<T.PointLight {...light.props} let:ref={lightRef} bind:ref>
+{:else if type === 'Point'}
+	<T.PointLight {...props} let:ref={lightRef} bind:ref>
 		<T.PointLightHelper args={[lightRef, 2]} />
 	</T.PointLight>
-{:else if light.type === 'Hemisphere'}
-	<T.HemisphereLight {...light.props} let:ref={lightRef} bind:ref>
+{:else if type === 'Hemisphere'}
+	<T.HemisphereLight {...props} let:ref={lightRef} bind:ref>
 		<T.HemisphereLightHelper args={[lightRef, 5]} />
 	</T.HemisphereLight>
 {/if}
