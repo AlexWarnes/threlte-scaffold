@@ -1,7 +1,20 @@
 <script lang="ts">
-	import { T, type ThreltePointerEvent } from '@threlte/core';
-	import { onMount } from 'svelte';
-	import { setSelection, selection, setSelectionRef } from './globalState';
+	import {
+		T,
+		type ThreltePointerEvent,
+		TransformControls,
+		TransformableObject
+	} from '@threlte/core';
+	import { afterUpdate, onMount } from 'svelte';
+	import { Vector3 } from 'three';
+	import {
+		setSelection,
+		selection,
+		setSelectionRef,
+		syncSceneToCode,
+		transformSnap,
+		allowInteractions
+	} from './globalState';
 	import type { ProtoLight, ProtoLightType } from './models';
 	export let id: string;
 	export let type: ProtoLightType;
@@ -29,13 +42,40 @@
 {:else if type === 'Directional'}
 	<T.DirectionalLight {...props} let:ref={lightRef} bind:ref>
 		<T.DirectionalLightHelper args={[lightRef, 5]} />
+		{#if $selection === id}
+			<TransformControls
+				on:objectChange={syncSceneToCode}
+				on:mouseDown={() => allowInteractions.set(false)}
+				on:mouseUp={() => setTimeout(() => allowInteractions.set(true))}
+				mode="translate"
+				translationSnap={$transformSnap}
+			/>
+		{/if}
 	</T.DirectionalLight>
 {:else if type === 'Point'}
 	<T.PointLight {...props} let:ref={lightRef} bind:ref>
 		<T.PointLightHelper args={[lightRef, 2]} />
+		{#if $selection === id}
+			<TransformControls
+				on:objectChange={syncSceneToCode}
+				on:mouseDown={() => allowInteractions.set(false)}
+				on:mouseUp={() => setTimeout(() => allowInteractions.set(true))}
+				mode="translate"
+				translationSnap={$transformSnap}
+			/>
+		{/if}
 	</T.PointLight>
 {:else if type === 'Hemisphere'}
 	<T.HemisphereLight {...props} let:ref={lightRef} bind:ref>
 		<T.HemisphereLightHelper args={[lightRef, 5]} />
+		{#if $selection === id}
+			<TransformControls
+				on:objectChange={syncSceneToCode}
+				on:mouseDown={() => allowInteractions.set(false)}
+				on:mouseUp={() => setTimeout(() => allowInteractions.set(true))}
+				mode="translate"
+				translationSnap={$transformSnap}
+			/>
+		{/if}
 	</T.HemisphereLight>
 {/if}

@@ -7,6 +7,7 @@
 	import MeshConverter from './MeshConverter.svelte';
 	import LightConverter from './LightConverter.svelte';
 	import { onMount } from 'svelte';
+	import { materials } from './materialHelpers';
 
 	/**
 	 * TODO:
@@ -33,6 +34,10 @@
 	} else {
 		transformSnap.set(null);
 	}
+
+	// $: console.log("$lights", $lights)
+	// $: console.log("$meshes", $meshes)
+	// $: console.log("$materials", $materials)
 </script>
 
 <T.PerspectiveCamera makeDefault position={[-8, 4, 8]} fov={55}>

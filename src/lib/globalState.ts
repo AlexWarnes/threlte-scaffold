@@ -1,6 +1,6 @@
 import { derived, get, writable, type Readable } from 'svelte/store';
 import { rxWritable } from 'svelte-fuse-rx';
-import { throttleTime } from 'rxjs';
+import { tap, throttleTime } from 'rxjs';
 import type {
 	ProtoGeometry,
 	ProtoGeometryType,
@@ -11,7 +11,7 @@ import type {
 	ProtoSettings,
 	TransformMode
 } from './models';
-import { defaultMaterial, defaultMaterials } from './materialHelpers';
+import { defaultMaterial, defaultMaterials, duplicateMaterialByID } from './materialHelpers';
 
 const defaultSettings: ProtoSettings = {
 	showGrid: true,
@@ -61,9 +61,15 @@ const defaultLightList: ProtoLight[] = [
 
 export const editablePropsByLight: { [key: string]: string[] } = {
 	AmbientLight: ['color', 'intensity'],
-	DirectionalLight: ['color', 'intensity', 'position'],
-	PointLight: ['color', 'intensity', 'distance', 'decay', 'position'],
-	HemisphereLight: ['color', 'groundColor', 'intensity', 'position']
+	DirectionalLight: ['color', 'intensity'],
+	PointLight: ['color', 'intensity', 'distance', 'decay'],
+	HemisphereLight: ['color', 'groundColor', 'intensity']
+};
+export const sceneGraphPropsByLight: { [key: string]: string[] } = {
+	AmbientLight: [],
+	DirectionalLight: ['position'],
+	PointLight: ['position'],
+	HemisphereLight: ['position']
 };
 
 let meshCount = defaultMeshList.length;
@@ -92,10 +98,15 @@ export const allowInteractions = writable<boolean>(true);
 
 // SCENE GRAPH SYNCING FOR CODE GEN
 export const updateSceneTrigger = rxWritable(1);
-export const updateScene = updateSceneTrigger.pipe(throttleTime(350));
+export const updateScene = updateSceneTrigger.pipe(
+	throttleTime(350),
+	tap(() => console.log('syncing...'))
+);
 export function addMesh(geometryType: ProtoGeometryType, materialID: string) {
 	meshCount += 1;
+	const newMatID = duplicateMaterialByID(materialID);
 	const newMesh = generateMeshSkeleton(meshCount, geometryType, materialID);
+	newMesh.materialID = newMatID;
 	meshes.update((current) => [newMesh, ...current]);
 }
 
@@ -142,14 +153,16 @@ function clearSelection() {
 }
 
 export function duplicateMesh(protoMesh: ProtoMesh, meshRef: any) {
-	const initialPosition = meshRef.position.clone().addScalar(1);
+	const p = meshRef.position.clone().addScalar(1);
+	const r = meshRef.rotation.clone();
+	const s = meshRef.scale.clone();
 	meshCount += 1;
 
 	const newMesh = generateMeshSkeleton(meshCount, protoMesh.geometry.type, protoMesh.materialID);
 	newMesh.initialProps = {
-		position: initialPosition,
-		rotation: meshRef.rotation.clone(),
-		scale: meshRef.scale.clone()
+		position: [p.x, p.y, p.z],
+		rotation: [r.x, r.y, r.z],
+		scale: [s.x, s.y, s.z]
 	};
 	meshes.update((current) => [newMesh, ...current]);
 }
@@ -169,4 +182,46 @@ function generateMeshSkeleton(idNum: number, geoType: ProtoGeometryType, matID: 
 		},
 		materialID: matID
 	};
+}
+
+export function updateObjByID(
+	type: 'MESH' | 'LIGHT',
+	id: string,
+	key: keyof ProtoMesh | keyof ProtoLight,
+	value: any
+) {
+	if (type === 'LIGHT') {
+		updateLightByID(id, key as keyof ProtoLight, value);
+	} else if (type === 'MESH') {
+		updateMeshByID(id, key as keyof ProtoMesh, value);
+	}
+}
+
+function updateLightByID(id: string, key: keyof ProtoLight, value: any) {
+	lights.update((current) => {
+		return current.map((l) => {
+			if (l.id === id) {
+				return {
+					...l,
+					[key]: value
+				};
+			} else {
+				return l;
+			}
+		});
+	});
+}
+function updateMeshByID(id: string, key: keyof ProtoMesh, value: any) {
+	lights.update((current) => {
+		return current.map((l) => {
+			if (l.id === id) {
+				return {
+					...l,
+					[key]: value
+				};
+			} else {
+				return l;
+			}
+		});
+	});
 }

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { InteractiveObject, T, TransformControls, type ThreltePointerEvent } from '@threlte/core';
-	import { onMount } from 'svelte';
+	import { afterUpdate, onMount } from 'svelte';
 	import GeometryConverter from './GeometryConverter.svelte';
 	import {
 		selection,

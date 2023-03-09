@@ -1,17 +1,11 @@
 <script lang="ts">
 	import { T } from '@threlte/core';
-	import { afterUpdate } from 'svelte';
-	import { meshes } from './globalState';
 	import { materials } from './materialHelpers';
-	import type { ProtoMaterial } from './models';
 	export let materialID: string;
 
-	afterUpdate(() => {
-		// console.log('MatConverter afterUpdate:', materialID);
-	});
+	// TODO: bug - why doesn't transparent/opacity/flatShading do anything until toneMapped is toggled?
 
-	$: console.log('mat', $materials[materialID]);
-	$: console.log('meshes', $meshes);
+	// $: console.log('selectMat:', materialID, $materials[materialID].props);
 </script>
 
 {#if $materials[materialID].type === 'Basic'}

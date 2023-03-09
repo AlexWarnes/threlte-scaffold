@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { ProtoMaterial } from './models';
+import type { ProtoMaterial, ProtoMaterialType } from './models';
 
 export const defaultMaterial = {
 	basic: {
@@ -34,13 +34,23 @@ export const defaultMaterials: { [key: string]: ProtoMaterial } = {
 	}
 };
 
-export let matCount = defaultMaterials.length;
+export let matCount: number = Object.keys(defaultMaterials).length;
 
-export function updateMaterialByID(matID: string, key: keyof ProtoMaterial, value: any) {
+export function duplicateMaterialByID(id: string) {
+	matCount += 1;
+	const newIDNum = matCount.toString().padStart(3, '0');
+	const newID = `mat-${newIDNum}`;
 	materials.update((current) => {
-		current[matID][key] = value;
+		const targetMaterial = current[id] || defaultMaterials['mat-001'];
+		const matCopy = {
+			...JSON.parse(JSON.stringify(targetMaterial)),
+			id: newID
+		};
+
+		current[newID] = matCopy;
 		return current;
 	});
+	return newID;
 }
 
 export const materials = writable(defaultMaterials);

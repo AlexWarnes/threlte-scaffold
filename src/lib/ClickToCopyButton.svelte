@@ -9,7 +9,6 @@
 	onMount(() => {
 		if (window.navigator) {
 			clickToCopy = (elementID: string): any => {
-				console.log('copy from elementID:', elementID);
 				window.navigator.clipboard
 					//@ts-ignore
 					.writeText(document.getElementById(elementID).innerText)

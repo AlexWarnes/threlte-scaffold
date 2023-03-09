@@ -11,15 +11,16 @@
 		selectionRef,
 		syncSceneToCode,
 		updateScene,
-		duplicateMesh
+		duplicateMesh,
+		sceneGraphPropsByLight
 	} from './globalState';
 	import { onMount } from 'svelte';
 	import Tweakpane from './Tweakpane.svelte';
 	import type { ProtoMesh } from './models';
 	export let ctx: ThrelteContext;
 
-	let propKeys: string[] = [];
-	let matKeys: string[] = [];
+	let sceneGraphKeys: string[] = [];
+	let stateKeys: string[] = [];
 	let details: any = null;
 
 	const isMesh = (type: string) => type.toLowerCase().includes('mesh');
@@ -57,12 +58,11 @@
 
 	$: if (details) {
 		if (isMesh(details.type)) {
-			propKeys = ['position', 'rotation', 'scale'];
+			sceneGraphKeys = ['position', 'rotation', 'scale'];
+			stateKeys = [];
 		} else if (isLight(details.type)) {
-			matKeys = [];
-			// TODO: light position, when available, will be edited directly on details (like for mesh)
-			// editableProps will be stored on the ProtoLight
-			propKeys = editablePropsByLight[details.type];
+			sceneGraphKeys = sceneGraphPropsByLight[details.type];
+			stateKeys = editablePropsByLight[details.type];
 		}
 	}
 
@@ -72,7 +72,7 @@
 {#if $selection && $selectionRef && details && selectionDetails}
 	<div id="editor-panel" class="container panel">
 		{#key $selection}
-			<Tweakpane title={$selection} {ctx} objectData={details} {propKeys} {materialID} />
+			<Tweakpane title={$selection} {ctx} objectData={details} {sceneGraphKeys} {stateKeys} {materialID} />
 		{/key}
 		<div class="button-box">
 			<button on:click={handleFocus} class="secondary">FOCUS</button>
