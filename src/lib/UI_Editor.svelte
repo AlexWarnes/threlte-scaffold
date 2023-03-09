@@ -1,26 +1,26 @@
 <script lang="ts">
 	import type { ThrelteContext } from '@threlte/core';
-	import CarbonTrashCan from '~icons/carbon/trash-can'
+	import CarbonTrashCan from '~icons/carbon/trash-can';
 	import { slide } from 'svelte/transition';
 	import {
 		deleteLight,
 		deleteMesh,
 		editablePropsByLight,
-		editablePropsByMaterial,
 		selection,
 		selectionDetails,
 		selectionRef,
 		syncSceneToCode,
 		updateScene,
-		duplicateMesh
+		duplicateMesh,
+		sceneGraphPropsByLight
 	} from './globalState';
 	import { onMount } from 'svelte';
 	import Tweakpane from './Tweakpane.svelte';
 	import type { ProtoMesh } from './models';
 	export let ctx: ThrelteContext;
 
-	let propKeys: string[] = [];
-	let matKeys: string[] = [];
+	let sceneGraphKeys: string[] = [];
+	let stateKeys: string[] = [];
 	let details: any = null;
 
 	const isMesh = (type: string) => type.toLowerCase().includes('mesh');
@@ -34,10 +34,13 @@
 			deleteLight($selection as string);
 		}
 	}
+
+	// $: material = $materials[($selectionDetails as ProtoMesh)?.geometry?.materialID]
+	// $: console.log(material)
 	function handleDuplicate() {
 		if (!details) return;
 
-    // TODO: handle object duplication
+		// TODO: handle object duplication
 		if (isMesh(details.type)) {
 			duplicateMesh($selectionDetails as ProtoMesh, $selectionRef);
 		} else if (isLight(details.type)) {
@@ -46,8 +49,8 @@
 	}
 	function handleFocus() {
 		if (!details) return;
-    // TODO: set target to selectionRef
-  }
+		// TODO: set target to selectionRef
+	}
 
 	$: if ($updateScene) {
 		details = ctx?.scene.children.find((obj) => obj.uuid === $selectionRef?.uuid);
@@ -55,19 +58,21 @@
 
 	$: if (details) {
 		if (isMesh(details.type)) {
-			propKeys = ['position', 'rotation', 'scale'];
-			matKeys = editablePropsByMaterial[details.material.type];
+			sceneGraphKeys = ['position', 'rotation', 'scale'];
+			stateKeys = [];
 		} else if (isLight(details.type)) {
-			matKeys = [];
-			propKeys = editablePropsByLight[details.type];
+			sceneGraphKeys = sceneGraphPropsByLight[details.type];
+			stateKeys = editablePropsByLight[details.type];
 		}
 	}
+
+	$: materialID = ($selectionDetails as ProtoMesh)?.materialID;
 </script>
 
-{#if $selection && $selectionRef && details}
+{#if $selection && $selectionRef && details && selectionDetails}
 	<div id="editor-panel" class="container panel">
 		{#key $selection}
-			<Tweakpane {ctx} objectData={details} {propKeys} {matKeys} title={$selection} />
+			<Tweakpane title={$selection} {ctx} objectData={details} {sceneGraphKeys} {stateKeys} {materialID} />
 		{/key}
 		<div class="button-box">
 			<button on:click={handleFocus} class="secondary">FOCUS</button>
@@ -75,7 +80,8 @@
 			<span class="flex-spacer" />
 			<button on:click={handleDelete} class="delete secondary">
 				<CarbonTrashCan />
-				DELETE</button>
+				DELETE</button
+			>
 		</div>
 	</div>
 {/if}
@@ -97,7 +103,7 @@
 		gap: 1rem;
 	}
 
-  button.delete {
-    background-color: #cd5c5c;
-  }
+	button.delete {
+		background-color: #cd5c5c;
+	}
 </style>

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { ThrelteContext } from '@threlte/core';
 	import { slide } from 'svelte/transition';
-	import { editablePropsByLight, editablePropsByMaterial, updateScene } from '$lib/globalState';
+	import { editablePropsByLight, updateScene } from '$lib/globalState';
 	import type { Euler, Light, Material, Mesh, Vector3 } from 'three';
 	import ClickToCopyButton from './ClickToCopyButton.svelte';
 	import CarbonLaunch from '~icons/carbon/launch';
@@ -45,8 +45,9 @@
 	};
 
 	const materialPropsToString = (mat: Material | any, prefix = '') => {
-		const propKeys = editablePropsByMaterial[mat.type];
-		return propsToString(mat, propKeys, prefix);
+	// 	const propKeys = editablePropsByMaterial[mat.type];
+	// 	return propsToString(mat, propKeys, prefix);
+	return ''
 	};
 
 	const lightPropsToString = (light: Light | any, prefix = '') => {

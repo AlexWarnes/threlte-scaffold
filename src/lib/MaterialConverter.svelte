@@ -1,39 +1,15 @@
 <script lang="ts">
 	import { T } from '@threlte/core';
-	import { syncSceneToCode } from './globalState';
-	import type { ProtoMaterial } from './models';
-	export let material: ProtoMaterial;
+	import { materials } from './materialHelpers';
+	export let materialID: string;
+
+	// TODO: bug - why doesn't transparent/opacity/flatShading do anything until toneMapped is toggled?
+
+	// $: console.log('selectMat:', materialID, $materials[materialID].props);
 </script>
 
-{#if material.type === 'Basic'}
-	<T.MeshBasicMaterial {...material.props}>
-		<!-- <Editable
-			name={materialEditorLabel}
-			color
-			transparent
-			opacity
-			wireframe
-			toneMapped
-			userData
-			on:change={syncSceneToCode}
-		/> -->
-	</T.MeshBasicMaterial>
-{:else if material.type === 'Standard'}
-	<T.MeshStandardMaterial {...material.props}>
-		<!-- <Editable
-			name={materialEditorLabel}
-			color
-			metalness
-			roughness
-			emissive
-			emissiveIntensity
-			transparent
-			opacity
-			wireframe
-			flatShading
-			toneMapped
-			userData
-			on:change={syncSceneToCode}
-		/> -->
-	</T.MeshStandardMaterial>
+{#if $materials[materialID].type === 'Basic'}
+	<T.MeshBasicMaterial {...$materials[materialID].props} />
+{:else if $materials[materialID].type === 'Standard'}
+	<T.MeshStandardMaterial {...$materials[materialID].props} />
 {/if}
